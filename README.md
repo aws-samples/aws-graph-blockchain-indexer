@@ -1,17 +1,112 @@
-## My Project
+# Welcome to the TheGraph-Service CDK
 
-TODO: Fill this README out!
+The CDK to deploy a [The Graph node](https://thegraph.com/) on ECS/EC2, an IPFS node, a managed PostgreSQL database, and an GraphQl API using ApiGateway. The main purpose of this service is to index and prepare the event data coming from the specified smart contracts, map them into a DB schema, store them in the PostgresqlDB in a more efficient form, and allow basic GraphQL queries through the API. The mappings and smart contract definitions are called *subgraph*.
 
-Be sure to:
+The CDK has two stacks in it:
+1. **BlockchainNodeStack:** provides an Ethereum full node based on [Amazon Managed Blockchain](https://aws.amazon.com/managed-blockchain/) (AMB). This node can act as a source for the Graph. If you want to use AMB as your blockchain node, deploy the EthereumNodeStack. It outputs the node's endpoints. Take note of the _AccessorUrl_. This is what you need as endpoint for the graph stack.
+2. **TheGraphServiceStack** provides the [Graph node](https://thegraph.com/). 
 
-* Change the title in this README
-* Edit your repository description on GitHub
+This repo has the normal folder structure for a CDK application. In addition to that there are two subfolders worth mentioning:
+1. `subgraph`: This folder contains the defintion for a subgraph that can be used for testing. Once theGraph is running, the subgraph needs to be deployed. Then the node will start indexing the subgraph. 
+2. `frontend`: A simple react frontend that can be used to test the subgraph and display its results. It can be used to demonstrate the time-travel capabilities of the graph node. It works with the `boredApes` and the `boredApes_simple` example subgraph.
 
-## Security
+# Network Support
+TheGraph-Service has support for the following networks (chain IDs)
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+* Ethereum mainnet (1)
+* Ethereum ropsten (3)
+* Ethereum rinkeby (4)
+* Ethereum goerli (5)
+* Polygon mumbai (80001)
+* Polygon matic (137)
 
-## License
+# Prerequisites
+## Install the CDK (only if you haven't done that already before)
+To manually install the `cdk` terminal client on MacOS and Linux and ensure the installed version:
 
-This library is licensed under the MIT-0 License. See the LICENSE file.
+```
+$ npm install -g aws-cdk && cdk --version
+```
 
+If you haven't done that before for this account and region, you need to bootstrap the AWS account with the `CDK Toolkit`
+
+```
+$ cdk bootstrap aws://<YOUR-AWS-ACCOUNT-NUMBER>/<REGION>
+```
+
+## Install Docker
+The CDK uses a docker based build process. The computer running the cdk commands needs to have [docker](https://www.docker.com/) installed to run the build. If you don't have docker installed, please install it before building the CDK stacks.
+
+# Setup
+Please install all the needed npm packages of the TheGraph-Service CDK
+
+```
+$ npm install
+```
+
+We need to allow external access to theGraphNode (i.e. the security group of the EC2 instance) just for the deployment of the GRS subgraph later on. There are two ways of deploying subgraphs to the graph node. 
+
+1. From your **local development machine**: To access the graph node from the local machine, we need to open the graph nodes's security group to the *external* IP address of the machine. You can query the external IP with [whatsmyip.org](https://www.whatsmyip.org/). Take note of the external IP and add it  `cdk.json`  Thus, please look up your IP of your (external) dev machine and modify `cdk.json`, so that it gets exported to CDK as context variable.
+2. From an **AWS-based instance** (such as Cloud9): To permit traffic from another EC2 instance, you need to open the graph's security group to allow traffic from the security group that has the cloud9 instance. You can take note of the security group's ID (it should start with `sg-`) and add it to `cdk.json` as `allowedSG`. It will be exported to the CDK.
+
+There are three more settings in `cdk.json`:
+1. `clientUrl` specifies the RPC URL for the blockchain node. If you are using AMB as blockchain node, make sure that you are using the billing-token based access, because the Graph won't sigv4 its requests by default. 
+2. `chainId` specifies the chain ID of the network
+3. `apiKey` sets an API key that will be needed to access the API gateway for queries. This can be any string. 
+
+
+```
+{
+  "app": "node bin/the_graph-service.js",
+  "watch": { ... },
+  "context": {
+    ...
+    "clientUrl": "<BLOCKCHAIN NODE URL>",
+    "chainId": 1,
+    "allowedIP": "<DEV MACHINE EXTERNAL IP>",
+    "allowedSG": "<SECURITY GROUP ID>"
+    "apiKey": "secretToken"
+  }
+}
+```
+
+At this point you can list the available cdk stacks of our CDK
+
+```
+$ cdk list
+```
+
+You can now deploy the whole stack with the following command
+```
+$ cdk deploy TheGraphServiceStack
+```
+
+# Deploy a subgraph
+For the deployment of the a subgraph follow the steps of the [README](subgraph/README.md) in the `/subgraph` folder!
+
+# Access to the GraphQL API
+There are two ways of accessing the Graph node: 
+1. directly from a specified IP (usually the development machine): If an IP has been exposed to the CDK as `allowedIP`, the security groups allow direct access to the EC2 instance that is running the graph containers. This is for development purposes.
+2. through API Gateway: external access for querying the graph is exposed via API GW. There are two routes on the API GW: 
+   1. `POST <base-url>/subgraphs/name/{subgraphName}`: This route accepts valid subgraphnames as path element. It is used for queries on the specific subgraph.
+   2. `POST <base-url>/graphql`: This route is for status queries about the syncing status of the graph node. 
+
+The route through the API gateway needs to be authorized. For that the CDK includes a simple authorizer that checks for the existence of an API key in the `authorization` header. The value can be set in `cdk.json` (see above). The authoriation header in only necessary for the queries throught the API gateway, because API gateway itself is open to queries from anywhere. 
+
+You can always lookup the API's **base-url** of the TheGraph-Service on the AWS ParameterStore. It is stored at `/indexer/queryEndpoint` and should look like  `https://<API ID>.execute-api.<region>.amazonaws.com`.
+
+Remark: If you access it using the browser, you will simply get a "message: Not found" response. The API accepts only POST requests.
+
+# GraphQL API Schema
+You can lookup and review the GraphQL Schema in [schema.graphql](subgraph/boredApes_simple/schema.graphql).
+
+# TheGraph-Service Configuration
+- The main parameters `chainid`, `clientURL` of the TheGraph-Service can be set in `cdk.json`.
+- In the `bin/the_graph-Service.js` file, you can set (and also add) some specific stack specific parameters for the infrastructure setup, e.g. instance size of the EC2. 
+- Obviously, you can also modify certain infrastructure settings of the TheGraph-Service by editing the main `lib/TheGraph-Service-stack.js` file, or changing the `lib/theGraphCluster-construct.js`.
+
+# Tear-down of TheGraph-Service
+
+```
+$ cdk destroy TheGraphServiceStack
+```

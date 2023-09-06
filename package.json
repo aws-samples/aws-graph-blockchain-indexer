@@ -1,0 +1,32 @@
+{
+  "name": "the_graph-service",
+  "version": "0.1.0",
+  "license": "MIT-0",
+  "bin": {
+    "the_graph-service": "bin/the_graph-service.js"
+  },
+  "scripts": {
+    "build": "echo \"The build step is not required when using JavaScript!\" && exit 0",
+    "cdk": "cdk",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.88.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigatewayv2-alpha": "^2.88.0-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-authorizers-alpha": "^2.88.0-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.88.0-alpha.0",
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@mui/material": "^5.11.14",
+    "aws-cdk-lib": "^2.85.0",
+    "cdk-nag": "^2.27.52",
+    "constructs": "^10.0.0",
+    "graphql": "^16.6.0",
+    "graphql-request": "^6.1.0",
+    "pg": "^8.11.0",
+    "react-query": "^3.39.3",
+    "react-router-dom": "^6.8.2"
+  }
+}
