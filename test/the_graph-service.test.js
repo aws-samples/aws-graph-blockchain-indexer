@@ -16,7 +16,7 @@ test('Graph Created', () => {
   const stack = new TheGraphService.TheGraphServiceStack(app, 'MyTestStack')
   // THEN
   const template = Template.fromStack(stack)
-  template.hasResourceProperties('AWS::ApiGatewayV2::Api', {
+  template.hasResourceProperties('AWS::ApiGatewayV2::Api ', {
     VisibilityTimeout: 300,
   })
 })
