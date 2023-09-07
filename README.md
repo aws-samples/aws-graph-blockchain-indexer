@@ -72,12 +72,14 @@ There are three more settings in `cdk.json`:
 3. `apiKey` sets an API key that will be needed to access the API gateway for queries. This can be any string. 
 
 
-```json
+```jsonc
 {
   "app": "node bin/the_graph-service.js",
-  "watch": { ... },
+  "watch": { 
+    //... 
+  },
   "context": {
-    ...
+    //...
     "clientUrl": "<BLOCKCHAIN NODE URL>",
     "chainId": 1,
     "allowedIP": "<DEV MACHINE EXTERNAL IP>",
