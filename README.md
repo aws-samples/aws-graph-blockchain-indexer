@@ -35,16 +35,19 @@ There are some interesting points:
 5. Queries to the graph can be made by calling an API Gateway, which is exposed to the public internet. (the other services are not accessible directly from the internet). 
 
 # Prerequisites
-## Install the CDK (only if you haven't done that already before)
+Before you can deploy the CDK, you'll have to satisfy two pre-requisites. If you have them running already you can skip to section **Setup**. The requirements are
+1. Install CDK
+2. Install Docker
+## Install CDK 
 To manually install the `cdk` terminal client on MacOS or Linux and ensure the installed version:
 
-```
+```sh
 $ npm install -g aws-cdk && cdk --version
 ```
 
 If you haven't done it before for this account and region, you need to bootstrap the AWS account with the `CDK Toolkit`
 
-```
+```sh
 $ cdk bootstrap aws://<YOUR-AWS-ACCOUNT-NUMBER>/<REGION>
 ```
 
@@ -54,7 +57,7 @@ The CDK uses a docker based build process. The computer running the cdk commands
 # Setup
 Please install all the needed npm packages of the TheGraph-Service CDK with:
 
-```
+```sh
 $ npm install
 ```
 
@@ -69,7 +72,7 @@ There are three more settings in `cdk.json`:
 3. `apiKey` sets an API key that will be needed to access the API gateway for queries. This can be any string. 
 
 
-```
+```json
 {
   "app": "node bin/the_graph-service.js",
   "watch": { ... },
@@ -86,19 +89,20 @@ There are three more settings in `cdk.json`:
 
 At this point you can list the available cdk stacks of our CDK with
 
-```
+```sh
 $ cdk list
 ```
 
 You can now deploy the whole stack with the following command
-```
+
+```sh
 $ cdk deploy TheGraphServiceStack
 ```
 
-# Deploy a subgraph
+# Deploy a Subgraph
 Once the node is up and running, you will need to deploy a subgraph to it, so that the node has something to index. Refer to the steps in the [README](subgraph/README.md) in the `/subgraph` folder!
 
-# Access to the GraphQL API
+# Access the GraphQL API
 There are two ways of accessing the Graph node: 
 1. directly from a specified IP (usually the development machine): If an IP has been exposed to the CDK as `allowedIP`, the security groups allow direct access to the EC2 instance that is running the graph containers. This is for development purposes.
 2. through API Gateway: external access for querying the graph is exposed via API GW. There are two routes on the API GW: 
@@ -114,13 +118,8 @@ Remark: If you access the URL using the browser, you will simply get a "message:
 # GraphQL API Schema
 You can lookup and review the GraphQL Schema in [schema.graphql](subgraph/boredApes_simple/schema.graphql).
 
-# TheGraph-Service Configuration
-- The main parameters `chainid`, `clientURL` of the TheGraph-Service can be set in `cdk.json`.
-- In the `bin/the_graph-Service.js` file, you can set (and also add) some specific stack specific parameters for the infrastructure setup, e.g. instance size of the EC2. 
-- Obviously, you can also modify certain infrastructure settings of the TheGraph-Service by editing the main `lib/TheGraph-Service-stack.js` file, or changing the `lib/theGraphCluster-construct.js`.
-
 # Tear-down of TheGraph-Service
 
-```
+```sh
 $ cdk destroy TheGraphServiceStack
 ```
