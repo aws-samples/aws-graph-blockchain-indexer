@@ -3,7 +3,7 @@
 This repo helps to spin up your own self-hosted [Graph node](https://thegraph.com) on AWS. It contains a CDK to deploy a node on ECS/EC2, an IPFS node, a managed PostgreSQL database, and an GraphQl API using ApiGateway. The main purpose of this service is to index and prepare the event data coming from the specified smart contracts, map them into a DB schema, store them in the PostgresqlDB in a more efficient form, and allow basic GraphQL queries through the API. The mappings and smart contract definitions are called *subgraph*.
 
 The CDK has two stacks in it:
-1. **BlockchainNodeStack:** provides an Ethereum full node based on [Amazon Managed Blockchain Access](https://aws.amazon.com/managed-blockchain/) (AMB). This node can act as a source for the Graph. If you want to use AMB as your blockchain node, deploy the EthereumNodeStack. It outputs the node's endpoints. Take note of the _AccessorUrl_. This is what you need as endpoint for the graph stack.
+1. **BlockchainNodeStack:** provides an Ethereum full node based on [Amazon Managed Blockchain Access](https://aws.amazon.com/managed-blockchain/) (AMB). This node can act as a source for the Graph. If you want to use AMB as your blockchain node, deploy the BlockchainNodeStack. It outputs the node's endpoints. Take note of the _AccessorUrl_. This is what you need as endpoint for the graph stack.
 2. **TheGraphServiceStack** provides the [Graph node](https://thegraph.com/). 
 
 This repo has the normal folder structure for a CDK application. In addition, there are two subfolders worth mentioning:
@@ -123,7 +123,16 @@ Remark: If you access the URL using the browser, you will simply get a "message:
 You can lookup and review the GraphQL Schema in [schema.graphql](subgraph/boredApes_simple/schema.graphql).
 
 # Tear-down of TheGraph-Service
+The CDK is configured to completely destroy the resources. This is useful for development environments that requrie rapid re-deployments of the resources to test out various features. However, it also means that after destroying a stack, no data is retained. If you want to retain the database with with the indexed data, you can configure that in the CDK by modifying the `removalPolicy` of the various components. In particular, the database can be set to `RemovalPolicy.SNAPSHOT` to create a DB snapshot before the DB is deleted. 
+
+The command to delete the stack is:
 
 ```sh
 $ cdk destroy TheGraphServiceStack
+```
+
+Similarly, if you've used the BlockchainNodeStack for the creating an AMB node, it can be taken down with: 
+
+```sh
+$ cdk destroy BlockchainNodeStack
 ```
