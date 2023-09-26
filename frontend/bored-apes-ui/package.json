@@ -12,7 +12,7 @@
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@mui/material": "latest",
-    "graphql": "^16.6.0",
+    "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
     "react": "latest",
     "react-18-blockies": "^1.0.6",
