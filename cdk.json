@@ -35,8 +35,8 @@
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
     "allowedSG": "",
     "chainId": 1,
-    "clientUrl": "https://nd-BYMMTYRC3FCCNHM2EBBFDY5S64.t.ethereum.managedblockchain.us-east-1.amazonaws.com?billingtoken=V4ucgQflbwqXhT53ajtHkxYuO5pETWzTUdc8Q0erlb",
-    "allowedIP": "69.193.158.100",
+    "clientUrl": "NODE_URL",
+    "allowedIP": "LOCAL PUBLIC IP",
     "logLevel": "debug",
     "apiKey": "secretToken"
   }

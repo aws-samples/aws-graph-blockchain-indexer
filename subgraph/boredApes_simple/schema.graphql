@@ -8,10 +8,10 @@ type Approval @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   approved: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  token_id: BigInt! # uint256
+  block_number: BigInt!
+  block_timestamp: BigInt!
+  transaction_hash: Bytes!
 }
 
 type ApprovalForAll @entity(immutable: true) {
@@ -19,28 +19,28 @@ type ApprovalForAll @entity(immutable: true) {
   owner: Bytes! # address
   operator: Bytes! # address
   approved: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  block_number: BigInt!
+  block_timestamp: BigInt!
+  transaction_hash: Bytes!
 }
 
 type OwnershipTransferred @entity(immutable: true) {
   id: Bytes!
-  previousOwner: Bytes! # address
-  newOwner: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  previous_owner: Bytes! # address
+  new_owner: Bytes! # address
+  block_number: BigInt!
+  block_timestamp: BigInt!
+  transaction_hash: Bytes!
 }
 
 type Transfer @entity(immutable: true) {
   id: Bytes!
   from: Bytes! # address
   to: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  token_id: BigInt! # uint256
+  block_number: BigInt!
+  block_timestamp: BigInt!
+  transaction_hash: Bytes!
 }
 
 type Contract @entity {
@@ -52,29 +52,29 @@ type Contract @entity {
 
 type Token @entity {
   id: Bytes!
-  tokenId: BigInt!
+  token_id: BigInt!
   uri: String!
-  ipfsUri: TokenMetadata
-  mintTx: Transfer
+  metadata: TokenMetadata
+  mint_tx: Transfer
   owner: Account!
   contract: Contract!
-  updatedAtTimestamp: BigInt!
-  previousOwners: [PrevTokenAccount!]! @derivedFrom(field: "token")
+  updated_at_timestamp: BigInt!
+  previous_owners: [PrevTokenAccount!]! @derivedFrom(field: "token")
 }
 
 type PrevTokenAccount @entity {
-  id: Bytes! # Set to `account.id.concat(token.id)`
+  id: Bytes! # Set to account.id.concat(token.id)
   account: Account!
   token: Token!
 }
 
-type TokenMetadata @entity {
+type TokenMetadata @entity(immutable: true) {
   id: String!
   image: String!
   attributes: [Attribute!]!
 }
 
-type Attribute @entity {
+type Attribute @entity(immutable: true) {
   id: String!
   key: String!
   value: String!

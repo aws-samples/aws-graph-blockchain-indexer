@@ -33,11 +33,41 @@ The three files define a subgraph. Because we are defining the mapping and the f
 
 ## Deploying the Subgraph
 After a subgraph has been defined, it needs to be deployed to the node. This consists of three steps: _building, creating,_ and _deploying._ The Graph CLI helps with that. 
-1. **Building the subgraph:** `graph codegen` builds the subgraph. This will create a `generated`` folder, which has all the files needed to deploy the subgraph. Whenever there is a modification to the subgraph it needs to be re-built.
-2. **Creating the subgraph on the node:** `graph create --node http://<IP OF GRAPH NODE EC2>:8020/ <NAME OF SUBGRAPH>` will create the subgraph on our node. This is a one time action.
-3. **Deploy the subgraph to the node:** `graph deploy --node http://<IP OF GRAPH NODE EC2>:8020/ --ipfs http://<IP OF GRAPH NODE EC2>:5001 <NAME OF SUBGRAPH>` will deploy the subgraph to the node. It asks a couple of questions, namely the version of the subgraph. This is needed if we update our subgraph and want to provide a new version. Once this command has finished, the graph has been deployed and the node will start indexing. 
+
+### 1. Building the Subgraph
+`graph codegen` builds the subgraph. This will create a `generated`` folder, which has all the files needed to deploy the subgraph. Whenever there is a modification to the subgraph it needs to be re-built.
+
+### 2. Creating the Subgraph on the Node
+The subgraph will be deployed to the graph node that is running already. As a prerequisite, we will query its IP address so that we can address it with our `graph` commands. You can either look up the IP on the AWS console with your EC2 instance or you can query it with the AWS CLI: 
+
+```
+export GRAPH_IP=$(aws ec2 describe-instances --filters 'Name=tag:Name,Values=TheGraphServiceStack/GraphCluster/nodeClientLaunchTemplate' --query  'Reservations[0].Instances[0].PublicIpAddress' --output text)
+```
+
+To simplify deployments it's also useful to define the subgraph's name as environment variable: 
+
+```
+export SUBGRAPH_NAME=mySubgraph
+```
+
+With both variables set, you can **create** your subgraph with: 
+
+```
+graph create --node http://${GRAPH_IP}:8020 ${SUBGRAPH_NAME}
+```
+
+This is a one time action.
+
+### 3. Deploy the Subgraph to the Node
+The subgraph needs to be deployed to the node with `graph deploy`. This is also the command to update the subgraph if there are any changes to it. The command is: 
+
+```
+graph deploy --node http://${GRAPH_IP}:8020/ --ipfs http://${GRAPH_IP}:5001 ${SUBGRAPH_NAME}
+```
+
+Once the command has finished, the graph has been deployed to the node and will start indexing. 
 
 The three commands used for deploying the subgraph need to communicate to the graph node on port 8020 and 5001. The CDK allows access on these ports from the `allowed IP` and the `allowedSG`. That is why we set them initially in `cdk.json`.
 
 # Querying a Subgraph
-Once the subgraph has been deployed, it can be queried via GraphQL. From the development machine, you can query the EC2 directly. Contrary to the output of the `graph deploy` command, the GraphQL is reachable on port 80 (i.e. directly on the EC2 IP) and not on port 8080 (which is used on the docker container, running on EC2). From the dev machine, the GraphQL endpoint is `http://<EC2 IP>/subgraphs/name/<NAME OF SUBGRAPH>`. For external access to the graph node use the API Gateway as described in [project's README.md](../README.md#Access-to-the-GraphQL-API).
+Once the subgraph has been deployed, it can be queried via GraphQL. From the development machine, you can query the EC2 directly. Contrary to the output of the `graph deploy` command, the GraphQL is reachable on port 80 (i.e. directly on the EC2 IP) and not on port 8080 (which is used on the docker container, running on EC2). From the dev machine, the GraphQL endpoint is `http://${GRAPH_IP}/subgraphs/name/${SUBGRAPH_NAME}`. For external access to the graph node use the API Gateway as described in [project's README.md](../README.md#Access-to-the-GraphQL-API).

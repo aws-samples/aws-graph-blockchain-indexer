@@ -11,10 +11,11 @@
     "test": "graph test"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.58.0",
-    "@graphprotocol/graph-ts": "^0.31.0"
+    "@babel/preset-typescript": "^7.23.3",
+    "@graphprotocol/graph-cli": "^0.65.0",
+    "@graphprotocol/graph-ts": "^0.32.0"
   },
   "devDependencies": {
-    "matchstick-as": "^0.5.0"
+    "matchstick-as": "^0.6.0"
   }
 }

@@ -9,14 +9,12 @@ import {
   json,
   Bytes,
   dataSource,
-  JSONValueKind,
-  ByteArray
+  JSONValueKind
 } from '@graphprotocol/graph-ts'
 
 import { Attribute, TokenMetadata } from '../generated/schema'
 
 export function handleTokenMetadata(content: Bytes): void {
-  log.info('Query metadata for {}', [dataSource.stringParam()])
   let tokenMetadata = new TokenMetadata(dataSource.stringParam())
   const value = json.fromBytes(content).toObject()
   // const value = json.fromBytes(content).toObject()
@@ -33,11 +31,13 @@ export function handleTokenMetadata(content: Bytes): void {
         const attributeValue = a.toObject()
         const attributeTraitType = attributeValue.get('trait_type')
         const attributeTraitValue = attributeValue.get('value')
-
+        
         if (attributeTraitType && attributeTraitValue) {
-          const attributeId = `${dataSource.stringParam()}-${attributeTraitType.toString()}-${attributeTraitValue.toString()}`
+          const attributeId = `${tokenMetadata.id}-${attributeTraitType.toString()}-${attributeTraitValue.toString()}`.split(' ').join('_')
+          
           let attribute = Attribute.load(attributeId)
           if (!attribute) {
+            
             attribute = new Attribute(attributeId)
             attribute.key = attributeTraitType.toString()
             attribute.value = attributeTraitValue.toString()
@@ -46,6 +46,10 @@ export function handleTokenMetadata(content: Bytes): void {
           // const attribute = new Attribute(attributeTraitType.toString(), attributeTraitValue.toString())
           parsedAttributes.push(attributeId)
         }
+        else {
+          log.error('Error parsing attributes: {}', [content.toString()])
+        }
+
       }
     }
 
@@ -55,5 +59,6 @@ export function handleTokenMetadata(content: Bytes): void {
     }
 
     tokenMetadata.save()
+    log.info('TokenMetadata for {} saved', [dataSource.stringParam()])
   }
 }
