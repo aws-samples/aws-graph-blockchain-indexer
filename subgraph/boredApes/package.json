@@ -1,0 +1,21 @@
+{
+  "name": "boredapes",
+  "license": "MIT-0",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ boredapes",
+    "create-local": "graph create --node http://localhost:8020/ boredapes",
+    "remove-local": "graph remove --node http://localhost:8020/ boredapes",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 boredapes",
+    "test": "graph test"
+  },
+  "dependencies": {
+    "@babel/preset-typescript": "^7.23.3",
+    "@graphprotocol/graph-cli": "^0.67.0",
+    "@graphprotocol/graph-ts": "^0.32.0"
+  },
+  "devDependencies": {
+    "matchstick-as": "^0.6.0"
+  }
+}
