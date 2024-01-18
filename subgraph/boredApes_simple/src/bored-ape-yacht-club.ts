@@ -4,12 +4,12 @@
 // available at http://aws.amazon.com/agreement or other written agreement between
 // Customer and either Amazon Web Services, Inc. or Amazon Web Services EMEA SARL or both.
 
-import { log, Bytes, BigInt, Address } from '@graphprotocol/graph-ts'
+import { log, Bytes, BigInt, Address, ByteArray } from '@graphprotocol/graph-ts'
 import {
   Approval as ApprovalEvent,
   ApprovalForAll as ApprovalForAllEvent,
   OwnershipTransferred as OwnershipTransferredEvent,
-  Transfer as TransferEvent
+  Transfer as TransferEvent,
 } from '../generated/BoredApeYachtClub/BoredApeYachtClub'
 import {
   Approval,
@@ -19,14 +19,14 @@ import {
   Account,
   Token,
   Contract,
-  PrevTokenAccount
+  PrevTokenAccount,
 } from '../generated/schema'
 
 import { TokenMetadata as TokenMetadataTemplate } from '../generated/templates'
 
 export function handleApproval(event: ApprovalEvent): void {
   let entity = new Approval(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.owner = event.params.owner
   entity.approved = event.params.approved
@@ -41,7 +41,7 @@ export function handleApproval(event: ApprovalEvent): void {
 
 export function handleApprovalForAll(event: ApprovalForAllEvent): void {
   let entity = new ApprovalForAll(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.owner = event.params.owner
   entity.operator = event.params.operator
@@ -55,10 +55,10 @@ export function handleApprovalForAll(event: ApprovalForAllEvent): void {
 }
 
 export function handleOwnershipTransferred(
-  event: OwnershipTransferredEvent
+  event: OwnershipTransferredEvent,
 ): void {
   let entity = new OwnershipTransferred(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.previous_owner = event.params.previousOwner
   entity.new_owner = event.params.newOwner
@@ -85,7 +85,7 @@ function getContract(address: Bytes): Contract {
     log.info("Detected new contract '{}' at {} with Symbol {}", [
       contract.name,
       contract.id.toHex(),
-      contract.symbol
+      contract.symbol,
     ])
   }
 
@@ -107,7 +107,7 @@ function getToken(
   contract: Contract,
   owner: Account,
   tokenId: BigInt,
-  timestamp: BigInt
+  timestamp: BigInt,
 ): Token {
   const id = contract.id.concatI32(tokenId.toI32())
   let token = Token.load(id)
@@ -123,14 +123,14 @@ function getToken(
     // index metadata with its own handler
     const ipfsHash = `${token.uri.substring(7)}`
     log.info('Adding ipfsHash {}', [ipfsHash])
-    token.metadata = ipfsHash
+    token.metadata = Bytes.fromByteArray(ByteArray.fromUTF8(ipfsHash))
     TokenMetadataTemplate.create(ipfsHash)
     token.save()
 
     log.info('Found new token {}/{}, {}', [
       contract.symbol,
       token.token_id.toString(),
-      ipfsHash
+      ipfsHash,
     ])
   }
 
@@ -139,7 +139,7 @@ function getToken(
 
 export function handleTransfer(event: TransferEvent): void {
   let entity = new Transfer(
-    event.transaction.hash.concatI32(event.logIndex.toI32())
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.from = event.params.from
   entity.to = event.params.to
@@ -159,26 +159,26 @@ export function handleTransfer(event: TransferEvent): void {
     contract,
     owner,
     event.params.tokenId,
-    event.block.timestamp
-    )
-      
+    event.block.timestamp,
+  )
+
   // add previous owners for non-mint transfers
   if (
     event.params.from !=
     Address.fromString('0x0000000000000000000000000000000000000000')
-    ) {
-      const prevOwnerId = token.owner.concat(token.id)
-      let prevOwner = new PrevTokenAccount(prevOwnerId)
-      prevOwner.account = token.owner
-      prevOwner.token = token.id
-      prevOwner.save()
-      log.info('New previous owner {} for token {}', [
-        prevOwner.account.toHexString(),
-        token.token_id.toString()
-      ])
-    }
-    
-    token.owner = owner.id
-    token.updated_at_timestamp = event.block.timestamp
-    token.save()
+  ) {
+    const prevOwnerId = token.owner.concat(token.id)
+    let prevOwner = new PrevTokenAccount(prevOwnerId)
+    prevOwner.account = token.owner
+    prevOwner.token = token.id
+    prevOwner.save()
+    log.info('New previous owner {} for token {}', [
+      prevOwner.account.toHexString(),
+      token.token_id.toString(),
+    ])
+  }
+
+  token.owner = owner.id
+  token.updated_at_timestamp = event.block.timestamp
+  token.save()
 }

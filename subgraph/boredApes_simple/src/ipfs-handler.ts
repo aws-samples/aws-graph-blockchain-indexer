@@ -9,20 +9,23 @@ import {
   json,
   Bytes,
   dataSource,
-  JSONValueKind
+  JSONValueKind,
+  ByteArray,
 } from '@graphprotocol/graph-ts'
 
 import { Attribute, TokenMetadata } from '../generated/schema'
 
 export function handleTokenMetadata(content: Bytes): void {
-  let tokenMetadata = new TokenMetadata(dataSource.stringParam())
+  let tokenMetadata = new TokenMetadata(
+    Bytes.fromByteArray(ByteArray.fromUTF8(dataSource.stringParam())),
+  )
+
   const value = json.fromBytes(content).toObject()
-  // const value = json.fromBytes(content).toObject()
   if (value) {
     const image = value.get('image')
     const attributesValue = value.get('attributes')
 
-    let parsedAttributes = new Array<string>()
+    let parsedAttributes = new Array<Bytes>()
 
     if (attributesValue && attributesValue.kind == JSONValueKind.ARRAY) {
       const attributesArray = attributesValue.toArray()
@@ -31,25 +34,21 @@ export function handleTokenMetadata(content: Bytes): void {
         const attributeValue = a.toObject()
         const attributeTraitType = attributeValue.get('trait_type')
         const attributeTraitValue = attributeValue.get('value')
-        
+
         if (attributeTraitType && attributeTraitValue) {
-          const attributeId = `${tokenMetadata.id}-${attributeTraitType.toString()}-${attributeTraitValue.toString()}`.split(' ').join('_')
-          
+          const attributeId = content.concatI32(i)
+
           let attribute = Attribute.load(attributeId)
           if (!attribute) {
-            
             attribute = new Attribute(attributeId)
             attribute.key = attributeTraitType.toString()
             attribute.value = attributeTraitValue.toString()
             attribute.save()
           }
-          // const attribute = new Attribute(attributeTraitType.toString(), attributeTraitValue.toString())
           parsedAttributes.push(attributeId)
-        }
-        else {
+        } else {
           log.error('Error parsing attributes: {}', [content.toString()])
         }
-
       }
     }
 

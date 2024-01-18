@@ -69,13 +69,13 @@ type PrevTokenAccount @entity {
 }
 
 type TokenMetadata @entity(immutable: true) {
-  id: String!
+  id: Bytes!
   image: String!
   attributes: [Attribute!]!
 }
 
 type Attribute @entity(immutable: true) {
-  id: String!
+  id: Bytes!
   key: String!
   value: String!
 }
