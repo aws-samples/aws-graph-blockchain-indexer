@@ -10,6 +10,7 @@ import {
   ApprovalForAll as ApprovalForAllEvent,
   OwnershipTransferred as OwnershipTransferredEvent,
   Transfer as TransferEvent,
+  BoredApeYachtClub,
 } from '../generated/BoredApeYachtClub/BoredApeYachtClub'
 import {
   Approval,
@@ -76,8 +77,13 @@ function getContract(address: Bytes): Contract {
   if (!contract) {
     contract = new Contract(address)
     contract = new Contract(address)
-    // const onChainContract = BoredApeYachtClub.bind(Address.fromBytes(address))
 
+    // if the underlying RPC node is an archive node, we can do contract calls too:
+    // const onChainContract = BoredApeYachtClub.bind(Address.fromBytes(address))
+    // contract.name = onChainContract.name()
+    // contract.symbol = onChainContract.symbol()
+
+    // here we assume a full node only and set these attributes to fixed values.
     contract.name = 'Bored Ape Yacht Club'
     contract.symbol = 'BAYC'
 
