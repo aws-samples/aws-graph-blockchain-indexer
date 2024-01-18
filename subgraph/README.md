@@ -19,7 +19,7 @@ With `graph init --allow-simple-name` you can scaffold a new folder for a subgra
 Once the command has finished you will have a new folder with a basic template for a subgraph in it. `cd` into that folder.
 
 ### Using the Existing Subgraph
-If you want to start of with an existing example, you can use the `subgraph/boredApes` (or `subgraph/boredApes_simple`). It is a subgraph that indexes all transfers of the popular [Bored Ape Yacht Club](https://boredapeyachtclub.com) NFT collection. Specifically, it tracks the BAYC NFTs. You can copy that folder into a new one and then start modifying it. The main difference between `boredApes` and `boredApes_simple` is the reliance on an archive node: `boredApes` call the smart contract during indexing and needs an archive node. `boredApes_simple` hardcodes some values and doesn't need to call the smart contract during indexing. It only relies on event data. That's why it only needs a full node. `cd` into the newly created folder.
+If you want to start of with an existing example, you can use the `subgraph/boredApes`. It is a subgraph that indexes all transfers of the popular [Bored Ape Yacht Club](https://boredapeyachtclub.com) NFT collection. Specifically, it tracks the BAYC NFTs. You can copy that folder into a new one and then start modifying it. To avoid requiring an archive node as a data source, `boredApes` hardcodes some values and doesn't need to call the smart contract during indexing. It only relies on event data. That's why it only needs a full node. `cd` into the newly created folder.
 
 ## Defining a Subgraph
 In the folder there are three main files of interest:
