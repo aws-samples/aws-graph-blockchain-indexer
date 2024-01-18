@@ -33,16 +33,16 @@ export function useGetTopHolders(numberOfHolders, blocknumber) {
                 name
                 symbol
               }
-              tokenId
+              token_id
               uri
-              ipfsUri {
+              metadata {
                 image
                 attributes {
                   key
                   value
                 }
               }
-              previousOwners {
+              previous_owners {
                 account {
                   id
                 }

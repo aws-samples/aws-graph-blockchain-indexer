@@ -29,7 +29,7 @@ export default function Account({ data }) {
       <Grid container spacing={2}>
         {tokens.map(token => (
           <Token
-            key={`${id}-${token.contract.name}-${token.tokenId}`}
+            key={`${id}-${token.contract.name}-${token.token_id}`}
             data={token}
             owner={id}
           />

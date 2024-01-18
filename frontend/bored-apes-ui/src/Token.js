@@ -18,23 +18,24 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
+import { teal } from '@mui/material/colors'
 import React from 'react'
 import Blockies from 'react-18-blockies'
 
 export default function Token({ data, owner }) {
   const [detailsOpen, setDetailsOpen] = React.useState(false)
 
-  const { tokenId, contract, uri, ipfsUri, previousOwners } = data
+  const { token_id, contract, uri, metadata, previous_owners } = data
 
   let imgUrl =
     'https://www.grouphealth.ca/wp-content/uploads/2018/05/placeholder-image.png'
-  if (ipfsUri != null) {
-    imgUrl = `https://ipfs.io/ipfs/${ipfsUri.image.slice(7)}`
+  if (metadata != null) {
+    imgUrl = `https://ipfs.io/ipfs/${metadata.image.slice(7)}`
   }
 
   let attributes = []
-  if (ipfsUri != null) {
-    attributes = ipfsUri.attributes
+  if (metadata != null) {
+    attributes = metadata.attributes
     // setAttributesString(attributes.map(a => `${a.key}: ${a.value}`).join(`','`))
   }
 
@@ -54,25 +55,36 @@ export default function Token({ data, owner }) {
             <CardMedia
               sx={{ height: 150 }}
               image={imgUrl}
-              title={`BAYC#${tokenId}`}
+              title={`BAYC#${token_id}`}
             />
             <CardContent>
               <Typography gutterBottom variant="h6" component="div">
-                {contract.symbol}#{tokenId}
+                {contract.symbol}#{token_id}
               </Typography>
-              {/* <Typography gutterBottom variant="caption" component="div">Previous Owners</Typography> */}
 
-              {/* <Grid container>
-                {previousOwners.map((o) =>
+              {/* Do not display previous owners on card directly. */}
+              {/* <Typography gutterBottom variant="caption" component="div">
+                Previous Owners
+              </Typography>
+
+              <Grid container>
+                {previous_owners.map(o => (
                   <Grid item xs={3} sx={{ mt: 1.5 }}>
-                    <Tooltip key={`prevOwner-${tokenId}-${o.account.id}`} title={o.account.id}>
+                    <Tooltip
+                      key={`prevOwner-${token_id}-${o.account.id}`}
+                      title={o.account.id}
+                    >
                       <Box>
-                        <Blockies key={`prevOwner-${tokenId}-${o.account.id}`} size={8} scale={3} seed={o.account.id} />
+                        <Blockies
+                          key={`prevOwner-${token_id}-${o.account.id}`}
+                          size={8}
+                          scale={3}
+                          seed={o.account.id}
+                        />
                       </Box>
                     </Tooltip>
                   </Grid>
-                )}
-
+                ))}
               </Grid> */}
             </CardContent>
           </CardActionArea>
@@ -80,7 +92,7 @@ export default function Token({ data, owner }) {
       </Grid>
       <Dialog open={detailsOpen} onClose={handleClose}>
         <DialogTitle>
-          {contract.symbol}#{tokenId}
+          {contract.symbol}#{token_id}
         </DialogTitle>
         <DialogContent>
           {/* <Stack direction="row"> */}
@@ -88,7 +100,7 @@ export default function Token({ data, owner }) {
           <Stack>
             <Box
               component="img"
-              alt={`${contract.symbol}#${tokenId}`}
+              alt={`${contract.symbol}#${token_id}`}
               src={imgUrl}
             />
 
@@ -104,24 +116,19 @@ export default function Token({ data, owner }) {
               <Typography variant="body">{owner}</Typography>
             </Stack>
 
-            <Typography variant="h6" sx={{ mt: 2 }}>
-              Attributes
-            </Typography>
-            {attributes.map(a => `${a.key}: ${a.value}`).join(', ')}
-
-            {previousOwners.length != 0 && (
+            {previous_owners.length != 0 && (
               <Typography variant="h6" sx={{ mt: 2 }}>
                 Previous Owners
               </Typography>
             )}
 
             <Grid container>
-              {previousOwners.map(o => (
+              {previous_owners.map(o => (
                 <Grid
                   item
                   xs={1}
-                  sx={{ mt: 1.5 }}
-                  key={`prevOwner-${tokenId}-${o.account.id}`}
+                  sx={{ mt: 1.5, pl: 2 }}
+                  key={`prevOwner-${token_id}-${o.account.id}`}
                 >
                   <Tooltip title={o.account.id}>
                     <Box>
@@ -131,6 +138,21 @@ export default function Token({ data, owner }) {
                 </Grid>
               ))}
             </Grid>
+
+            <Typography variant="h6" sx={{ mt: 2 }}>
+              Attributes
+            </Typography>
+            {attributes.map(a => (
+              <Typography sx={{ pl: 2 }}>
+                <Typography
+                  component="span"
+                  sx={{ color: 'teal', fontWeight: 'bold' }}
+                >
+                  {a.key}:
+                </Typography>{' '}
+                {a.value}
+              </Typography>
+            ))}
           </Stack>
           {/* </Stack> */}
         </DialogContent>
