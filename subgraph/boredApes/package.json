@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@babel/preset-typescript": "^7.23.3",
-    "@graphprotocol/graph-cli": "^0.67.0",
+    "@graphprotocol/graph-cli": "^0.67.4",
     "@graphprotocol/graph-ts": "^0.32.0"
   },
   "devDependencies": {
