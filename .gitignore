@@ -3,6 +3,9 @@ node_modules
 generated
 build
 
+# DotEnv
+.env
+
 # CDK asset staging directory
 .cdk.staging
 cdk.out
