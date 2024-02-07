@@ -8,7 +8,7 @@ The CDK has two stacks in it:
 
 This repo has the normal folder structure for a CDK application. In addition, there are two subfolders worth mentioning:
 1. `subgraph`: This folder contains the defintion for a subgraph that can be used for testing. Once theGraph is running, the subgraph needs to be deployed. Then the node will start indexing the subgraph. 
-2. `frontend`: A simple react frontend that can be used to test the subgraph and display its results. It can be used to demonstrate the time-travel capabilities of the graph node. It works with the `boredApes` and the `boredApes_simple` example subgraph.
+2. `frontend`: A simple react frontend that can be used to test the subgraph and display its results. It can be used to demonstrate the time-travel capabilities of the graph node. It works with the `boredApes` example subgraph.
 
 # Network Support
 TheGraph-Service has support for the following networks (chain IDs)
@@ -61,35 +61,23 @@ Please install all the needed npm packages of the TheGraph-Service CDK with:
 $ npm install
 ```
 
+## Configuration in .env
+There are various configuration parameters that can be set in a `.env` file. The `.envTempate` file shows the config parameters with their default values. To set them copy the template to a `.env`:
+
+```sh
+cp .envTemplate .env
+```
+
+In `.env` uncomment the values that you want to set and update them. The main ones that need to be set are:
+
+* `CLIENT_URL` which specifies the RPC URL for the blockchain node. If you are using AMB as blockchain node, make sure that you are using the [token based access](https://docs.aws.amazon.com/managed-blockchain/latest/ethereum-dev/ethereum-tokens.html), because the Graph won't sigv4 its requests by default. The `BlockchainNodeStack` provides this URL in its output. 
+* `CHAIN_ID` specifies the blockchain that you're indexing. It defaults to *1*, which is the Ethereum mainnet. 
+* `API_KEY` is the API key that you need to provide to query your graph node. It defaults to *secretToken*. 
+
 We need to allow external access to the graph node just for the deployment of the subgraphs later on. There are two ways of deploying subgraphs to the graph node. 
 
-1. From your **local development machine**: To access the graph node from the local machine, we will to open the graph node  to the *external* IP address of the development machine. You can query the external IP with [whatsmyip.org](https://www.whatsmyip.org/). Take note of the external IP and add it  `cdk.json`, so that it gets exported to CDK as context variable.
-2. From an **AWS-based instance** (such as Cloud9): To permit traffic from another EC2 instance, you need to open the graph's security group to allow traffic from the security group that has the cloud9 instance. You can take note of the security group's ID (it should start with `sg-`) and add it to `cdk.json` as `allowedSG`. It will be exported to the CDK.
-
-There are three more settings in `cdk.json`:
-1. `clientUrl` specifies the RPC URL for the blockchain node. If you are using AMB as blockchain node, make sure that you are using the [token based access](https://docs.aws.amazon.com/managed-blockchain/latest/ethereum-dev/ethereum-tokens.html), because the Graph won't sigv4 its requests by default. 
-2. `chainId` specifies the chain ID of the network
-3. `apiKey` sets an API key that will be needed to access the API gateway for queries. This can be any string. 
-
-
-```yaml
-{
-  "app": "node bin/the_graph-service.js",
-  "watch": { 
-    # ...
-    # lots of stuff omitted 
-  },
-  "context": {
-    # ...
-    # more stuff omitted 
-    "clientUrl": "<BLOCKCHAIN NODE URL>",
-    "chainId": 1,
-    "allowedIP": "<DEV MACHINE EXTERNAL IP>",
-    "allowedSG": "<SECURITY GROUP ID>"
-    "apiKey": "secretToken"
-  }
-}
-```
+1. From your **local development machine**: To access the graph node from the local machine, we will to open the graph node  to the *external* IP address of the development machine. You can query the external IP with [whatsmyip.org](https://www.whatsmyip.org/). Take note of the external IP and set it in `.env` as `ALLOWED_IP`.
+2. From an **AWS-based instance** (such as Cloud9): To permit traffic from another EC2 instance, you need to open the graph's security group to allow traffic from the security group that has the cloud9 instance. You can take note of the security group's ID (it should start with `sg-`) and set it in `.env` as `ALLOWED_SG`.
 
 At this point you can list the available cdk stacks of our CDK with
 
