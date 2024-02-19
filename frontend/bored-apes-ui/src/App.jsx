@@ -9,20 +9,20 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 
-import { useGetTopHolders } from './useRequest'
-import Account from './Account'
+// import { useGetTopHolders } from './useRequest'
+import Account from './Account.jsx'
 import { LinearProgress, Slider, Stack, TextField } from '@mui/material'
 import Grid2 from '@mui/material/Unstable_Grid2/Grid2'
 
 import { useQuery } from 'react-query'
 import { GraphQLClient, gql, request } from 'graphql-request'
 
-const SUBGRAPH_URL = `${process.env.REACT_APP_API_GW_URL}${process.env.REACT_APP_SUBGRAPH_PATH}`
-const STATUS_URL = `${process.env.REACT_APP_API_GW_URL}${process.env.REACT_APP_STATUS_PATH}`
+const SUBGRAPH_URL = `${import.meta.env.VITE_APP_API_GW_URL}${import.meta.env.VITE_APP_SUBGRAPH_PATH}`
+const STATUS_URL = `${import.meta.env.VITE_APP_API_GW_URL}${import.meta.env.VITE_APP_STATUS_PATH}`
 
 const graphQLClient = new GraphQLClient(SUBGRAPH_URL, {
   headers: {
-    authorization: process.env.REACT_APP_API_KEY,
+    authorization: import.meta.env.VITE_APP_API_KEY,
   },
 })
 

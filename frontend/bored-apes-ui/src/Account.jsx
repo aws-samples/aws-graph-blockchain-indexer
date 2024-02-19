@@ -6,7 +6,7 @@
 
 import { Box, Grid, Stack, Tooltip, Typography } from '@mui/material'
 import React from 'react'
-import Token from './Token'
+import Token from './Token.jsx'
 import Blockies from 'react-18-blockies'
 
 export default function Account({ data }) {

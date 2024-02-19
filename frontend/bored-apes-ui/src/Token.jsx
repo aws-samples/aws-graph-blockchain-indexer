@@ -18,7 +18,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material'
-import { teal } from '@mui/material/colors'
+
 import React from 'react'
 import Blockies from 'react-18-blockies'
 
@@ -48,8 +48,8 @@ export default function Token({ data, owner }) {
   }
 
   return (
-    <React.Fragment>
-      <Grid item>
+    <React.Fragment key={`${contract.symbol}#${token_id}`}>
+      <Grid item >
         <Card sx={{ width: 200 }}>
           <CardActionArea onClick={handleOpen}>
             <CardMedia
@@ -143,7 +143,7 @@ export default function Token({ data, owner }) {
               Attributes
             </Typography>
             {attributes.map(a => (
-              <Typography sx={{ pl: 2 }}>
+              <Typography sx={{ pl: 2 }} key={`${contract.symbol}#${token_id}-${a.key}`}>
                 <Typography
                   component="span"
                   sx={{ color: 'teal', fontWeight: 'bold' }}
