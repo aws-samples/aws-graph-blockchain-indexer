@@ -57,7 +57,7 @@ The CDK uses a docker based build process. The computer running the cdk commands
 # Setup
 Before deploying the CDK application, it's essential to define several key parameters, which are outlined in the following section.
 
-## Configuration in .env and deployment
+## Configuration in .env
 There are various configuration parameters that can be set in a `.env` file. The `.envTempate` file shows the config parameters with their default values. To set them copy the template to a `.env`:
 
 ```sh
