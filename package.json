@@ -14,13 +14,15 @@
     "aws-cdk": "^2.128.0"
   },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.734.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/material": "^5.15.10",
-    "aws-cdk-lib": "^2.128.0",
+    "aws-cdk-lib": "^2.177.0",
     "cdk-nag": "^2.28.39",
     "constructs": "^10.3.0",
     "dotenv": "^16.4.4",
+    "esbuild": "~0.21",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
     "pg": "^8.11.3",

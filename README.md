@@ -35,7 +35,13 @@ There are some interesting points:
 5. Queries to the graph can be made by calling an API Gateway, which is exposed to the public internet. (the other services are not accessible directly from the internet). 
 
 # Prerequisites
-Before you can deploy the CDK, you'll have to satisfy two pre-requisites. If you have them running already you can skip to section **Setup**. The requirements are
+Before you can deploy the CDK, you'll have to install all the needed npm packages of the TheGraph-Service CDK with:
+
+```sh
+$ npm install
+```
+
+Additionally, satisfy the following two pre-requisites. If you have them running already you can skip to section **Setup**. The requirements are
 1. Install CDK
 2. Install Docker
 ## Install CDK 
@@ -45,21 +51,11 @@ To manually install the `cdk` terminal client on MacOS or Linux and ensure the i
 $ npm install -g aws-cdk && cdk --version
 ```
 
-If you haven't done it before for this account and region, you need to bootstrap the AWS account with the `CDK Toolkit`
-
-```sh
-$ cdk bootstrap aws://<YOUR-AWS-ACCOUNT-NUMBER>/<REGION>
-```
-
 ## Install Docker
 The CDK uses a docker based build process. The computer running the cdk commands needs to have [docker](https://www.docker.com/) installed to run the build. If you don't have docker installed, please install it before building the CDK stacks.
 
 # Setup
-Please install all the needed npm packages of the TheGraph-Service CDK with:
-
-```sh
-$ npm install
-```
+Before deploying the CDK application, it's essential to define several key parameters, which are outlined in the following section.
 
 ## Configuration in .env
 There are various configuration parameters that can be set in a `.env` file. The `.envTempate` file shows the config parameters with their default values. To set them copy the template to a `.env`:
@@ -68,7 +64,7 @@ There are various configuration parameters that can be set in a `.env` file. The
 cp .envTemplate .env
 ```
 
-In `.env` uncomment the values that you want to set and update them. The main ones that need to be set are:
+In `.env`, uncomment the values that you want to set and update them. The main ones that need to be set are:
 
 * `CLIENT_URL` which specifies the RPC URL for the blockchain node. If you are using AMB as blockchain node, make sure that you are using the [token based access](https://docs.aws.amazon.com/managed-blockchain/latest/ethereum-dev/ethereum-tokens.html), because the Graph won't sigv4 its requests by default. The `BlockchainNodeStack` provides this URL in its output. 
 * `CHAIN_ID` specifies the blockchain that you're indexing. It defaults to *1*, which is the Ethereum mainnet. 
@@ -79,12 +75,18 @@ We need to allow external access to the graph node just for the deployment of th
 1. From your **local development machine**: To access the graph node from the local machine, we will to open the graph node  to the *external* IP address of the development machine. You can query the external IP with [whatsmyip.org](https://www.whatsmyip.org/). Take note of the external IP and set it in `.env` as `ALLOWED_IP`.
 2. From an **AWS-based instance** (such as Cloud9): To permit traffic from another EC2 instance, you need to open the graph's security group to allow traffic from the security group that has the cloud9 instance. You can take note of the security group's ID (it should start with `sg-`) and set it in `.env` as `ALLOWED_SG`.
 
+## Deployment 
 At this point you can list the available cdk stacks of our CDK with
 
 ```sh
 $ cdk list
 ```
 
+If you haven't utilized the CDK before for this account and region, you need to bootstrap the AWS account with the `CDK Toolkit` by running this command. 
+
+```sh
+$ cdk bootstrap aws://<YOUR-AWS-ACCOUNT-NUMBER>/<REGION>
+```
 You can now deploy the whole stack with the following command
 
 ```sh
@@ -108,7 +110,7 @@ You can always lookup the API's **base-url** of the TheGraph-Service on the AWS 
 Remark: If you access the URL using the browser, you will simply get a "message: Not found" response. The API accepts only POST requests.
 
 # GraphQL API Schema
-You can lookup and review the GraphQL Schema in [schema.graphql](subgraph/boredApes_simple/schema.graphql).
+You can lookup and review the GraphQL Schema in [schema.graphql](subgraph/boredApes/schema.graphql).
 
 # Tear-down of TheGraph-Service
 The CDK is configured to completely destroy the resources. This is useful for development environments that requrie rapid re-deployments of the resources to test out various features. However, it also means that after destroying a stack, no data is retained. If you want to retain the database with with the indexed data, you can configure that in the CDK by modifying the `removalPolicy` of the various components. In particular, the database can be set to `RemovalPolicy.SNAPSHOT` to create a DB snapshot before the DB is deleted. 
